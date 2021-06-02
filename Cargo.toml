@@ -1,0 +1,21 @@
+[package]
+name = "tianyi"
+version = "0.1.0"
+authors = ["Taoda <tyf00@aliyun.com>"]
+edition = "2018"
+
+[dependencies]
+tokio = { version = "1.6", features = ["full"] }
+bytes = "1.0.1"
+chrono = "0.4.19"
+flexi_logger = "0.17.1"
+rust-crypto = "0.2.36"
+log = "0.4.14"
+crc = "2.0.0"
+sha-1 = "0.9.6"
+hex = "0.4.3"
+
+[dev-dependencies]
+quickcheck = "1.0.3"
+quickcheck_macros = "1.0.0"
+hex-literal = "0.3.1"

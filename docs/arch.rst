@@ -53,21 +53,16 @@ Format of object packs
 An object pack is a file consisting of a pack of objects.
 Its structure is:
 
-+   A header of "TIANYI OBJPACK" followed by a single character '\\x1A'.
-+   Followed by a series of objects. For each,
-
-    +   An unsigned 64-bit, network byte order, size of the object,
-    +   The raw content of the object,
-
+*   A header of "TIANYIv1".
+*   Followed by a 64-bit, network byte order number indicating the number of objects stored in this file.
 *   Followed by a list of object anchors, sorted in the increasing order of object's SHA-1.
     Each anchor consists of
 
     +   the object's SHA-1,
-    +   An unsigned 64-bit, network byte order, offset to the beginning of this file,
-        pointed to the first byte of the object (i.e., the first byte of its size).
+    +   An unsigned 64-bit, network byte order, length of the object.
 
-*   Followed by a 32-bit, network byte order number indicating the number of objects stored in this file.
-*   Followed by a CRC64 checksum of the entire file except this checksum.
+*   Followed by a series of raw contents of objects, in the same order as their anchors.
+*   Followed by a `CRC-64/XZ <https://reveng.sourceforge.io/crc-catalogue/all.htm>`_ checksum of the entire file except this checksum.
 
 Initial tag schema
 ###################
