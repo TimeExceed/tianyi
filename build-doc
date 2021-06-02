@@ -1,0 +1,17 @@
+#!/usr/bin/python3
+
+import subprocess as sp
+import os
+import sys
+from pathlib import Path
+
+SOURCEDIR = 'docs'
+BUILDDIR = 'build/docs'
+
+if __name__ == '__main__':
+    cwd = Path.cwd().resolve()
+    sp.check_call(['docker', 'run', '--rm', '--tty',
+        '-v', '{}:/opt/code/'.format(cwd),
+        'taoda-base:latest', 'sphinx-build', '-M', 'html', SOURCEDIR, BUILDDIR])
+    print()
+    print('open this:', cwd.joinpath(BUILDDIR).joinpath('html/index.html'))
