@@ -1,5 +1,8 @@
 use tokio::fs::File;
 use tokio::io::{AsyncReadExt, AsyncSeekExt, SeekFrom};
+use tianyi::define_str_var;
+
+define_str_var!(ANYTHING, "ANYTHING");
 
 #[tokio::main]
 pub async fn main() {

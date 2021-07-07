@@ -5,7 +5,7 @@ pub enum EnvError {
 }
 
 #[derive(Debug, PartialEq, Eq)]
-pub struct StrVar(&'static str, Option<&'static str>);
+pub struct StrVar(pub &'static str, pub Option<&'static str>);
 
 impl StrVar {
     pub fn get(&self) -> Result<String, EnvError> {
@@ -25,17 +25,17 @@ impl StrVar {
 #[macro_export]
 macro_rules! define_str_var {
     ($var_name: ident, $env_name: expr) => {
-        pub const $var_name: StrVar = StrVar($env_name, None);
+        pub const $var_name: $crate::env::StrVar = $crate::env::StrVar($env_name, None);
     };
     ($var_name: ident, $env_name: expr, $default: expr) => {
-        pub const $var_name: StrVar = StrVar($env_name, Some($default));
+        pub const $var_name: $crate::env::StrVar = $crate::env::StrVar($env_name, Some($default));
     };
 }
 
 macro_rules! define_var {
     ($var_name: ident, $typ: ty) => {
         #[derive(Debug)]
-        pub struct $var_name(&'static str, Option<$typ>);
+        pub struct $var_name(pub &'static str, pub Option<$typ>);
         
         impl $var_name {
             pub fn get(&self) -> Result<$typ, EnvError> {
@@ -69,10 +69,10 @@ define_var!(I64Var, i64);
 #[macro_export]
 macro_rules! define_i64_var {
     ($var_name: ident, $env_name: expr) => {
-        pub const $var_name: I64Var = I64Var($env_name, None);
+        pub const $var_name: $crate::env::I64Var = $crate::env::I64Var($env_name, None);
     };
     ($var_name: ident, $env_name: expr, $default: expr) => {
-        pub const $var_name: I64Var = I64Var($env_name, Some($default));
+        pub const $var_name: $crate::env::I64Var = $crate::env::I64Var($env_name, Some($default));
     };
 }
 
@@ -81,10 +81,10 @@ define_var!(F64Var, f64);
 #[macro_export]
 macro_rules! define_f64_var {
     ($var_name: ident, $env_name: expr) => {
-        pub const $var_name: F64Var = F64Var($env_name, None);
+        pub const $var_name: $crate::env::F64Var = $crate::env::F64Var($env_name, None);
     };
     ($var_name: ident, $env_name: expr, $default: expr) => {
-        pub const $var_name: F64Var = F64Var($env_name, Some($default));
+        pub const $var_name: $crate::env::F64Var = $crate::env::F64Var($env_name, Some($default));
     };
 }
 

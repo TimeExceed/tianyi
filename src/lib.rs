@@ -4,4 +4,4 @@ pub use self::object::*;
 mod packfile;
 pub use self::packfile::*;
 
-mod env;
+pub mod env;
