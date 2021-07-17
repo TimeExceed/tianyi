@@ -5,17 +5,23 @@ authors = ["Taoda <tyf00@aliyun.com>"]
 edition = "2018"
 
 [dependencies]
-tokio = { version = "1.6", features = ["full"] }
+tokio = { version = "1.8", features = ["full"] }
 bytes = "1.0.1"
 chrono = "0.4.19"
-flexi_logger = "0.17.1"
+flexi_logger = "0.18"
 rust-crypto = "0.2.36"
 log = "0.4.14"
 crc = "2.0.0"
 sha-1 = "0.9.6"
 hex = "0.4.3"
+kv = "0.22.0"
+rand = "0.8.4"
+avro-rs = "0.13.0"
+static_init = "1.0.1"
 
 [dev-dependencies]
 quickcheck = "1.0.3"
 quickcheck_macros = "1.0.0"
 hex-literal = "0.3.1"
+stdext = "0.3.1"
+async-channel = "1.6.1"

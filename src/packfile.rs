@@ -5,9 +5,8 @@ use tokio::io::{AsyncReadExt, AsyncWriteExt, AsyncSeekExt};
 use std::cmp::min;
 use std::collections::BTreeMap;
 use std::io::SeekFrom;
-use std::future::Future;
 use std::path::{Path, PathBuf};
-use log::{error, warn, info, debug};
+use log::{error, info};
 
 pub struct PackFileWriter {
 }
@@ -230,10 +229,12 @@ pub struct Metadata {
 
 #[cfg(test)]
 mod tests {
-    use std::collections::BTreeSet;
-    use super::*;
+    use crate::test_utils::AutoRemoveFile;
     use hex_literal::hex;
     use quickcheck::{TestResult, quickcheck};
+    use stdext::function_name;
+    use std::collections::BTreeSet;
+    use super::*;
 
     pub async fn read_file(path: &Path) -> Result<Bytes, std::io::Error> {
         let mut contents = vec![];
@@ -241,48 +242,10 @@ mod tests {
         fp.read_to_end(&mut contents).await?;
         Ok(Bytes::from(contents))
     }
-    
-    pub struct AutoRemoveFile {
-        path: PathBuf,
-        suppress: bool,
-    }
-    
-    impl AutoRemoveFile {
-        pub fn new(path: &str) -> AutoRemoveFile {
-            let path: PathBuf = ["/", "dev", "shm", path].iter().collect();
-            AutoRemoveFile{
-                path,
-                suppress: false,
-            }
-        }
-    
-        #[allow(dead_code)]
-        pub fn suppress(path: &str) -> AutoRemoveFile {
-            let path: PathBuf = ["/", "dev", "shm", path].iter().collect();
-            AutoRemoveFile{
-                path,
-                suppress: true,
-            }
-        }
-    }
-    
-    impl AsRef<Path> for AutoRemoveFile {
-        fn as_ref(&self) -> &Path {
-            &self.path
-        }
-    }
-    
-    impl Drop for AutoRemoveFile {
-        fn drop(&mut self) {
-            if !self.suppress {
-                std::fs::remove_file(self.as_ref()).unwrap();
-            }
-        }
-    }
 
     #[tokio::test]
     async fn empty() {
-        let path = AutoRemoveFile::new("empty.tianyi.pack");
+        let path = AutoRemoveFile::new(&format!("{}.pack", function_name!()));
         {
             let objs: Vec<Object> = vec![];
             PackFileWriter::dump(path.as_ref(), objs.iter()).await.unwrap();
@@ -300,7 +263,7 @@ mod tests {
 
     #[tokio::test]
     async fn one() {
-        let path = AutoRemoveFile::new("one.tianyi.pack");
+        let path = AutoRemoveFile::new(&format!("{}.pack", function_name!()));
         {
             let objs = vec![
                 Object::new(Bytes::from_static(b"hello world")),
@@ -323,7 +286,7 @@ mod tests {
 
     #[tokio::test]
     async fn check_integrity_ok() {
-        let path = AutoRemoveFile::new("check_integrity_ok.tianyi.pack");
+        let path = AutoRemoveFile::new(&format!("{}.pack", function_name!()));
         {
             let objs: Vec<Object> = vec![];
             PackFileWriter::dump(path.as_ref(), objs.iter()).await.unwrap();
@@ -333,7 +296,7 @@ mod tests {
 
     #[tokio::test]
     async fn check_integrity_fail_too_short_file() {
-        let path = AutoRemoveFile::new("check_integrity_fail_too_short_file.tianyi.pack");
+        let path = AutoRemoveFile::new(&format!("{}.pack", function_name!()));
         {
             let mut file = OpenOptions::new()
                 .write(true)
@@ -348,7 +311,7 @@ mod tests {
 
     #[tokio::test]
     async fn check_integrity_fail_checksum_mismatch() {
-        let path = AutoRemoveFile::new("check_integrity_fail_checksum_mismatch.tianyi.pack");
+        let path = AutoRemoveFile::new(&format!("{}.pack", function_name!()));
         {
             let mut file = OpenOptions::new()
                 .write(true)
@@ -366,7 +329,7 @@ mod tests {
 
     #[tokio::test]
     async fn read_empty_file() {
-        let path = AutoRemoveFile::new("read_empty_file.tianyi.pack");
+        let path = AutoRemoveFile::new(&format!("{}.pack", function_name!()));
         {
             let objs: Vec<Object> = vec![];
             PackFileWriter::dump(path.as_ref(), objs.iter()).await.unwrap();
@@ -378,7 +341,7 @@ mod tests {
 
     #[tokio::test]
     async fn read_1obj_file() {
-        let path = AutoRemoveFile::new("read_1obj_file.tianyi.pack");
+        let path = AutoRemoveFile::new(&format!("{}.pack", function_name!()));
         let oracle_obj = Object::new(Bytes::from_static(b"hello world"));
         {
             let objs = vec![oracle_obj.clone()];
@@ -419,7 +382,7 @@ mod tests {
     async fn go_write_then_read(
         objs: BTreeSet<Object>,
     ) -> Result<TestResult, std::io::Error> {
-        let path = AutoRemoveFile::new("write_then_read.tianyi.pack");
+        let path = AutoRemoveFile::new(&format!("{}.pack", function_name!()));
         PackFileWriter::dump(path.as_ref(), objs.iter()).await?;
         let rdr = PackFileReader::new(path.as_ref().to_owned()).await?;
         let meta: Vec<_> = rdr.iter_meta().collect();
